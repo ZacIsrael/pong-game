@@ -1,0 +1,38 @@
+
+When do we ask the server for new messages?
+
+What is polling?
+- make a get request every so often
+- polling rate: the amount of time in which another get request is made 
+
+What is a socket?
+- an opening or hollow that forms a holder for data
+- an opening in a computer system which a developer can connect to 
+so they can send an recieve data
+- a holder for a connection on a network of computers 
+- A network socket is a software structure within a network node of a computer 
+network that serves as an endpoint for sending and receiving data across the 
+network. The structure and properties of a socket are defined by an application 
+programming interface for the networking architecture
+- WebSockets allow continuous two way communication between a user's browser and a server
+
+Sockets vs Polling:
+- sockets open a channel between a web browswer and a server
+- communication is bidirectional (server & client) when using a socket 
+- sockets allow the client to know when the server has been updated so it no longer needs to guess (un-like polling)
+
+WebSockets:
+- https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+- https://github.com/websockets/ws
+- a protocol, a way of sending messages over the internet 
+- When a websocket emits an event, it just sends it to whatever client is listening on the socket 
+- 
+
+Socket io:
+- https://socket.io/docs/v4/
+- popular node package that allows the use of websockets on both the client and server side 
+- a library that allows dvelopers to do real time bi-directional communication between the browser
+and the srver 
+- consists of a Node.js server and a JavaScript client library for the browser
+- server must connected to and send messages to multiple clients 
+- emit cheat sheet: https://socket.io/docs/v4/emit-cheatsheet/
