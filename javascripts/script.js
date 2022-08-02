@@ -1,6 +1,13 @@
+const SERVER_URL = 'http://localhost:3000';
+
 // Canvas Related 
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
+
+// connect to the server
+const socket = io(SERVER_URL);
+
+let isReferee = false;
 let paddleIndex = 0;
 
 let width = 500;
@@ -24,7 +31,7 @@ let ballDirection = 1;
 // Speed
 let speedY = 2;
 let speedX = 0;
-let computerSpeed = 4;
+
 
 // Score for Both Players
 let score = [ 0, 0 ];
@@ -38,17 +45,17 @@ function createCanvas() {
   renderCanvas();
 }
 
-// Wait for Opponents
-// function renderIntro() {
-//   // Canvas Background
-//   context.fillStyle = 'black';
-//   context.fillRect(0, 0, width, height);
+// Wait for Opponents, shows when player 1 is waiting for player 2 to join the game
+function renderIntro() {
+  // Canvas Background
+  context.fillStyle = 'black';
+  context.fillRect(0, 0, width, height);
 
-//   // Intro Text
-//   context.fillStyle = 'white';
-//   context.font = "32px Courier New";
-//   context.fillText("Waiting for opponent...", 20, (canvas.height / 2) - 30);
-// }
+  // Intro Text
+  context.fillStyle = 'white';
+  context.font = "32px Courier New";
+  context.fillText("Waiting for opponent...", 20, (canvas.height / 2) - 30);
+}
 
 // Render Everything on Canvas
 function renderCanvas() {
@@ -150,37 +157,17 @@ function ballBoundaries() {
       speedX = trajectoryX[1] * 0.3;
     } else {
       // Reset Ball, Increase Computer Difficulty, add to Player Score
-      if (computerSpeed < 6) {
-        computerSpeed += 0.5;
-      }
       ballReset();
       score[0]++;
     }
   }
 }
 
-// Computer Movement
-function computerAI() {
-  
-  if (playerMoved) {
-    // computer's paddle will head in the direction of the ball 
-    if (paddleX[1] + paddleDiff < ballX) {
-      paddleX[1] += computerSpeed;
-    } else {
-      paddleX[1] -= computerSpeed;
-    }
-    if (paddleX[1] < 0) {
-      paddleX[1] = 0;
-    } else if (paddleX[1] > (width - paddleWidth)) {
-      paddleX[1] = width - paddleWidth;
-    }
-  }
-}
 
 // Called Every Frame, called everytime the game is updated 
 function animate() {
   // move the computer paddle 
-  computerAI();
+  // computerAI();
   // move the ball
   ballMove();
   renderCanvas();
@@ -188,15 +175,26 @@ function animate() {
   window.requestAnimationFrame(animate);
 }
 
-// Start Game, Reset Everything
-// starts the Game
-function startGame() {
+// Load Game, Reset Everything
+function loadGame() {
   createCanvas();
-  // renderIntro();
-  
-  paddleIndex = 0;
+  renderIntro();
+
+  // tell the server that the client is ready to play, finished loading everything
+  socket.emit('ready');
+}
+
+// starts the game 
+function startGame(){
+  // represents the paddle that the current player is controlling 
+  // the user that is the referee controlls the paddle at the bottom of the screen,
+  // the other user controls the paddle at the top of the screen 
+  paddleIndex = isReferee ? 0 : 1;
+
   // tells the browser what needs to be done before the next repaint of the canvas
   window.requestAnimationFrame(animate);
+
+  // listen and respond to user input 
   canvas.addEventListener('mousemove', (e) => {
     playerMoved = true;
     paddleX[paddleIndex] = e.offsetX;
@@ -212,5 +210,21 @@ function startGame() {
 }
 
 // On Load
-startGame();
+loadGame();
 
+// listen to the connect event. connects the client/user to the server 
+socket.on('connect', () => {
+  // id of the socket session 
+  console.log(`Connected. socket.id= ${socket.id}`);
+});
+
+// start the game (client side obviously)
+socket.on('startGame', (refereeId) => {
+  console.log(`Referee socket.id= ${socket.id}`);
+
+  // the current client is the referee
+  isReferee = socket.id === refereeId;
+  // Now, start the game 
+  startGame();
+
+});
