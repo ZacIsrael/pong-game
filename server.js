@@ -42,5 +42,12 @@ io.on('connection', (socket) => {
             // second paramater: id of the client that will be the referee. In this case, it will always be the second player  
             io.emit('startGame', socket.id)
         }
+    });
+
+    socket.on('paddleMove', (paddleData) => {
+        // paddleData object contains the x position of the current player's paddle 
+
+        // send this data to the other player 
+        socket.broadcast.emit('paddleMove', paddleData)
     })
 });

@@ -204,6 +204,14 @@ function startGame(){
     if (paddleX[paddleIndex] > (width - paddleWidth)) {
       paddleX[paddleIndex] = width - paddleWidth;
     }
+
+    // Send the current player's paddle position as it is being moved 
+    // to the server so that the server can reemit the position to the opponent's browser
+    // The paddles will now be in sync on both browsers  
+    socket.emit('paddleMove', {
+      // x position of the paddle as it has moved 
+      xPosition: paddleX[paddleIndex]
+    })
     // Hide Cursor
     canvas.style.cursor = 'none';
   });
@@ -226,5 +234,15 @@ socket.on('startGame', (refereeId) => {
   isReferee = socket.id === refereeId;
   // Now, start the game 
   startGame();
+
+});
+
+socket.on('paddleMove', (paddleData) => {
+  // toggle between 1 & 0 depending on which user/client
+  const opponentPaddleIndex = 1 - paddleIndex;
+  // update the game state in this client/user to reflect the game state on the opponent's client 
+  paddleX[opponentPaddleIndex] = paddleData.xPosition
+
+
 
 });
