@@ -4,8 +4,8 @@ const SERVER_URL = 'http://localhost:3000';
 const canvas = document.createElement('canvas');
 const context = canvas.getContext('2d');
 
-// socket io implicitly connects to the server
-const socket = io();
+// socket io connects to the 'pong' namespace 
+const socket = io('/pong');
 
 let isReferee = false;
 let paddleIndex = 0;

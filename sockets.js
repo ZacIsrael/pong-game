@@ -4,9 +4,12 @@
 let readyPlayerCount = 0;
 
 function listen(io){
+
+    // connect to the pong name space
+    const pongNameSpace = io.of('/pong');
     // listen to the connection event, 
     // server will recieve this event everytime a user/client connects to it 
-    io.on('connection', (socket) => {
+    pongNameSpace.on('connection', (socket) => {
         // socket used to communicate with the user/client that just connected 
         console.log(`User/client connected. socket.id= ${socket.id}`);
 
@@ -23,7 +26,7 @@ function listen(io){
 
                 // lets all the clients know that the game is ready
                 // second paramater: id of the client that will be the referee. In this case, it will always be the second player  
-                io.emit('startGame', socket.id)
+                pongNameSpace.emit('startGame', socket.id)
             }
         });
 
