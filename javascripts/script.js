@@ -98,6 +98,13 @@ function ballReset() {
   ballX = width / 2;
   ballY = height / 2;
   speedY = 3;
+
+  // emit the score, and the x & y coordinates of the ball to the server vwhenever they change 
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score,
+  });
 }
 
 // Adjust Ball Movement
@@ -109,6 +116,12 @@ function ballMove() {
   if (playerMoved) {
     ballX += speedX;
   }
+  // emit the score, and the x & y coordinates of the ball to the server vwhenever they change 
+  socket.emit('ballMove', {
+    ballX,
+    ballY,
+    score,
+  });
 }
 
 // Determine What Ball Bounces Off, Score Points, Reset Ball
@@ -168,10 +181,12 @@ function ballBoundaries() {
 function animate() {
   // move the computer paddle 
   // computerAI();
-  // move the ball
-  ballMove();
+  if(isReferee){
+    // only the referee player can move the ball and keep track of where it is bouncing 
+    ballMove();
+    ballBoundaries();
+  }
   renderCanvas();
-  ballBoundaries();
   window.requestAnimationFrame(animate);
 }
 
@@ -242,7 +257,10 @@ socket.on('paddleMove', (paddleData) => {
   const opponentPaddleIndex = 1 - paddleIndex;
   // update the game state in this client/user to reflect the game state on the opponent's client 
   paddleX[opponentPaddleIndex] = paddleData.xPosition
+});
 
-
-
+socket.on('ballMove', (ballData) => {
+  // Update the x & y coordinates of the ball and the score with the
+  // data returned from the server
+  ({ ballX, ballY, score } = ballData)
 });

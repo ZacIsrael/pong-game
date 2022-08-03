@@ -49,5 +49,11 @@ io.on('connection', (socket) => {
 
         // send this data to the other player 
         socket.broadcast.emit('paddleMove', paddleData)
-    })
+    });
+
+    // listen for when the ball has moved 
+    socket.on('ballMove', (ballData) => {
+        // broadcast the x & y coordinates of the ball and the score to the opponent's browser
+        socket.broadcast.emit('ballMove', ballData)
+    });
 });
