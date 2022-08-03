@@ -33,8 +33,8 @@ io.on('connection', (socket) => {
 
         readyPlayerCount++;
 
-        // 2 player game, 2 clients/users have connected 
-        if(readyPlayerCount === 2){
+        // Even number of players have connected
+        if(readyPlayerCount % 2 === 0){
             // start the game
             // broadcast to both clients that the game is ready
 
@@ -55,5 +55,12 @@ io.on('connection', (socket) => {
     socket.on('ballMove', (ballData) => {
         // broadcast the x & y coordinates of the ball and the score to the opponent's browser
         socket.broadcast.emit('ballMove', ballData)
+    });
+
+    // listens for when a user/client disconnects for whatever reason
+    // the socket will automatically try to reconnect with the client unless the server intentionally disconnected 
+    socket.on('disconnect', (reason) => {
+        // the reason parameter is the reason why that user/client disconnected 
+        console.log(`User/client with socket.id=  ${socket.id} disconnected because ${reason}`)
     });
 });
