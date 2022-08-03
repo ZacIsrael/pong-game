@@ -44,3 +44,6 @@ application over a single shared connection
 - allows the developer to separate the concerns of the socket server by introducing new endpoints that the 
 client can connect to for different tasks 
 
+What are Rooms?
+- a way of dividing socket io namespaces into groupings of sockets
+- 
